@@ -1,4 +1,4 @@
 
-"""A set of wrapper functions for accessing the eBird API."""
+"""A set of wrapper functions for accessing the eBusd API."""
 
-import ebusdpy
+from .ebusdpy import (init, read, write)

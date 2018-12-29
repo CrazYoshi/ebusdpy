@@ -5,13 +5,13 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="ebusdpy",
-    version="0.0.5",
+    version="0.0.10",
     author="CrazYoshi",
     author_email="crazyoshi1186@gmail.com",
     description="eBusd python integration library",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/pypa/ebusdpy",
+    url="https://github.com/CrazYoshi/ebusdpy",
     packages=setuptools.find_packages(),
     classifiers=[
         'Programming Language :: Python :: 3.3',
