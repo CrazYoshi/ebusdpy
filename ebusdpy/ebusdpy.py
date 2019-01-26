@@ -1,8 +1,6 @@
 
 import socket
 
-from .const import (SENSOR_TYPES)
-
 def init(address):
     try:
         """ Open the socket at the specified address, call the command sent and return data """
@@ -16,7 +14,7 @@ def init(address):
     finally:
         sock.close()
 
-def read(address, circuit, name, ttl):
+def read(address, circuit, name, type, ttl):
     result = None
     try:
         """ Open the socket at the specified address, call the command sent and return data """
@@ -29,7 +27,7 @@ def read(address, circuit, name, ttl):
         sock.sendall(command.encode())
         """ Get the result decoded UTF-8 """
         result = sock.recv(256).decode('utf-8').rstrip()
-        result = humanize(circuit, name, result)
+        result = humanize(circuit, type, result)
     except socket.timeout:
         raise socket.timeout(socket.timeout)
     except socket.error:
@@ -47,7 +45,7 @@ def write(address, circuit, name, value):
         sock.connect(address)
         """ Send the command """
         WRITE_COMMAND = 'write -c {0} {1} {2}\n'
-        command = WRITE_COMMAND.format(circuit, name, value)
+        command = WRITE_COMMAND.format(circuit, type, value)
         sock.sendall(command.encode())
         """ Get the result decoded UTF-8 """
         result = sock.recv(256).decode('utf-8').rstrip()
@@ -59,31 +57,21 @@ def write(address, circuit, name, value):
         sock.close()
     return result
 
-def timer_format(string):
-    """Datetime formatter."""
-    _r = []
-    _s = string.split(';')
-    for i in range(0, len(_s) // 2):
-        if(_s[i * 2] != '-:-' and _s[i * 2] != _s[(i * 2) + 1]):
-            _r.append(_s[i * 2] + '/' + _s[(i * 2) + 1])
-    return ' - '.join(_r)
-
-def humanize(circuit, name, value):
+def humanize(circuit, type, value):
     _state = None
-    _type = SENSOR_TYPES[circuit][name]
-    if _type == 0:
+    if type == 0:
         _state = format(
             float(value), '.1f')
-    elif _type == 1:
-        _state = timer_format(value)
-    elif _type == 2:
+    elif type == 1:
+        _state = value.replace(';-:-','')
+    elif type == 2:
         if value == 1:
             _state = 'on'
         else:
             _state = 'off'
-    elif _type == 3:
+    elif type == 3:
         _state = value
-    elif _type == 4:
+    elif type == 4:
         if 'ok' not in value.split(';'):
             return
         _state = value.partition(';')[0]
