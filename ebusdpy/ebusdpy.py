@@ -45,7 +45,7 @@ def write(address, circuit, name, value):
         sock.connect(address)
         """ Send the command """
         WRITE_COMMAND = 'write -c {0} {1} {2}\n'
-        command = WRITE_COMMAND.format(circuit, type, value)
+        command = WRITE_COMMAND.format(circuit, name, value)
         sock.sendall(command.encode())
         """ Get the result decoded UTF-8 """
         result = sock.recv(256).decode('utf-8').rstrip()
