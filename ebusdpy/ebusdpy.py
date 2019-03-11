@@ -1,6 +1,11 @@
 
 import socket
 
+class EBusError(Exception):
+    def __init__(self, message):
+        # Call the base class constructor with the parameters it needs
+        super().__init__(message)
+
 def init(address):
     try:
         """ Open the socket at the specified address, call the command sent and return data """
@@ -8,9 +13,9 @@ def init(address):
         sock.settimeout(5)
         sock.connect(address)
     except socket.timeout:
-        raise socket.timeout(socket.timeout)
+        raise EBusError(socket.timeout)
     except socket.error:
-        raise socket.error(socket.error)
+        raise EBusError(socket.error)
     finally:
         sock.close()
 
@@ -26,12 +31,13 @@ def read(address, circuit, name, type, ttl):
         command = READ_COMMAND.format(circuit, name, ttl)
         sock.sendall(command.encode())
         """ Get the result decoded UTF-8 """
-        result = sock.recv(256).decode('utf-8').rstrip()
-        result = humanize(circuit, type, result)
+        decoded = sock.recv(256).decode('utf-8').rstrip()
+        if 'ERR:' not in decoded:
+            result = humanize(type, decoded)
     except socket.timeout:
-        raise socket.timeout(socket.timeout)
+        raise EBusError(socket.timeout)
     except socket.error:
-        raise socket.error(socket.error)
+        raise EBusError(socket.error)
     finally:
         sock.close()
     return result
@@ -50,20 +56,20 @@ def write(address, circuit, name, value):
         """ Get the result decoded UTF-8 """
         result = sock.recv(256).decode('utf-8').rstrip()
     except socket.timeout:
-        raise socket.timeout(socket.timeout)
+        raise EBusError(socket.timeout)
     except socket.error:
-        raise socket.error(socket.error)
+        raise EBusError(socket.error)
     finally:
         sock.close()
     return result
 
-def humanize(circuit, type, value):
+def humanize(type, value):
     _state = None
     if type == 0:
         _state = format(
             float(value), '.1f')
     elif type == 1:
-        _state = value.replace(';-:-','')
+        _state = value.replace(';-:-', '')
     elif type == 2:
         if value == 1:
             _state = 'on'
