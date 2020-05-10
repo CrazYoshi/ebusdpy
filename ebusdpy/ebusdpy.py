@@ -71,7 +71,7 @@ def humanize(type, value):
     elif type == 1:
         _state = value.replace(';-:-', '')
     elif type == 2:
-        if value == 1:
+        if value == 1 or value == 'on':
             _state = 'on'
         else:
             _state = 'off'
