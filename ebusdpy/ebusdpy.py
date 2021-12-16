@@ -31,9 +31,9 @@ def read(address, circuit, name, type, ttl):
         command = READ_COMMAND.format(circuit, name, ttl)
         sock.sendall(command.encode())
         """ Get the result decoded UTF-8 """
-        decoded = sock.recv(256).decode('utf-8').rstrip()
-        if 'ERR:' not in decoded:
-            result = humanize(type, decoded)
+        result = sock.recv(256).decode('utf-8').rstrip()
+        if 'ERR:' not in result:
+            result = humanize(type, result)
     except socket.timeout:
         raise EBusError(socket.timeout)
     except socket.error:
