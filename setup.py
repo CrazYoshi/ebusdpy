@@ -7,7 +7,7 @@ setuptools.setup(
     name="ebusdpy",
     version="0.0.17",
     author="CrazYoshi",
-    author_email="crazyoshi1186@gmail.com",
+    author_email="myemail@gmail.com",
     description="eBusd python integration library",
     long_description=long_description,
     long_description_content_type="text/markdown",
